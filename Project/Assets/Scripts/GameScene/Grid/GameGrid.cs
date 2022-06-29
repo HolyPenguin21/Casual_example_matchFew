@@ -29,6 +29,16 @@ public class GameGrid
         CenterGrid();
     }
 
+    public GridCell Get_GridCell_byObj(GameObject obj)
+    {
+        foreach (GridCell cell in grid)
+            if (cell.go == obj)
+                return cell;
+
+        Debug.LogError($"Cell with {obj} not found.");
+        return null;
+    }
+
     private void Create_Grid()
     {
         int cellCount = width * heigth;
@@ -45,6 +55,8 @@ public class GameGrid
                 Vector3 pos = new Vector3(xPos, yPos, 0);
 
                 GameObject cell_obj = MonoBehaviour.Instantiate(cellPrefab, pos, Quaternion.identity, gridHolder);
+                cell_obj.name = $"{x}-{y}";
+
                 Utility.Coords coords = new Utility.Coords(x, y);
                 GridCell cell = new GridCell(cell_obj, coords);
 

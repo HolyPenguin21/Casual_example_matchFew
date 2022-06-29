@@ -18,7 +18,7 @@ public class Game_SceneController : MonoBehaviour
     public Sprite yellowItemImage;
 
     BurgerMenu burgerMenu;
-    GameGrid grid;
+    [HideInInspector] public GameGrid grid;
 
     private void Awake()
     {
