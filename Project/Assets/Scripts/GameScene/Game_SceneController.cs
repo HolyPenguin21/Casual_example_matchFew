@@ -17,16 +17,18 @@ public class Game_SceneController : MonoBehaviour
     public Sprite redItemImage;
     public Sprite yellowItemImage;
 
-    BurgerMenu burgerMenu;
     [HideInInspector] public GameGrid grid;
+    BurgerMenu burgerMenu;
+    MatchChecker matchChecker;
 
     private void Awake()
     {
         Set_AsSingletone();
         Check_ItemImages();
 
-        burgerMenu = new BurgerMenu();
         grid = new GameGrid(width, heigth);
+        burgerMenu = new BurgerMenu();
+        matchChecker = new MatchChecker();
     }
 
     private void Check_ItemImages()

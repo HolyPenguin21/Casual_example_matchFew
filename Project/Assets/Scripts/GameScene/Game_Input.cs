@@ -8,7 +8,6 @@ public class Game_Input : MonoBehaviour
 
     private Vector3 click_StartPos;
     private Vector3 click_CurrentPos;
-    private Vector3 click_EndPos;
 
     private GridCell pickedCell;
 
@@ -16,14 +15,14 @@ public class Game_Input : MonoBehaviour
     {
         sceneCamera = Camera.main;
 
-        GlobalEvents.onClick_down += Get_ClickedCell;
+        GlobalEvents.onClick_down += Set_PickedCell;
         GlobalEvents.onClick_down += Setup_PickedCell;
         GlobalEvents.onClick_down += Get_StartPos;
 
         GlobalEvents.onDrag += Get_CurrentPos;
         GlobalEvents.onDrag += Move_PickedCell;
 
-        GlobalEvents.onClick_up += Reset_Input;
+        GlobalEvents.onRelease += Drop_PickedCell;
     }
 
     private void Update()
@@ -34,16 +33,23 @@ public class Game_Input : MonoBehaviour
     private void InputHandler()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
             GlobalEvents.Input_onClickDown();
+        }
 
-        if(Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
             GlobalEvents.Input_onDrag();
+        }
 
         if (Input.GetKeyUp(KeyCode.Mouse0))
-            GlobalEvents.Input_onClickUp(pickedCell, Get_DragDirrection());
+        {
+            SwapTiles(pickedCell, Get_DragDirrection());
+            GlobalEvents.Input_onRelease();
+        }
     }
 
-    private void Get_ClickedCell()
+    private void Set_PickedCell()
     {
         Ray ray = sceneCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit clickHit;
@@ -64,18 +70,6 @@ public class Game_Input : MonoBehaviour
         pickedCell.PickUp();
     }
 
-    private void Get_StartPos()
-    {
-        if (pickedCell == null) return;
-
-        click_StartPos = pickedCell.itemImage_tr.position;
-    }
-
-    private void Get_CurrentPos()
-    {
-        click_CurrentPos = Get_InputWorldPos();
-    }
-
     private void Move_PickedCell()
     {
         if (pickedCell == null) return;
@@ -92,14 +86,60 @@ public class Game_Input : MonoBehaviour
         pickedCell.itemImage_tr.position = movePos;
     }
 
-    private void Reset_Input(GridCell cell, Utility.Dirrection dirrection)
+    private void SwapTiles(GridCell cell, Utility.Dirrection dirrection)
     {
         if (cell == null) return;
+        if (cell.item == null) return;
+        if (dirrection == Utility.Dirrection.none) return;
 
-        cell.Drop();
+        GridCell secondCell = null;
+        Item tempItem = null;
 
-        if (pickedCell == cell)
-            pickedCell = null;
+        switch (dirrection)
+        {
+            case Utility.Dirrection.left:
+                if (cell.n_left != null)
+                    secondCell = cell.n_left;
+                break;
+            case Utility.Dirrection.top:
+                if (cell.n_top != null)
+                    secondCell = cell.n_top;
+                break;
+            case Utility.Dirrection.right:
+                if (cell.n_right != null)
+                    secondCell = cell.n_right;
+                break;
+            case Utility.Dirrection.bottom:
+                if (cell.n_bottom != null)
+                    secondCell = cell.n_bottom;
+                break;
+        }
+
+        if (secondCell == null) return;
+
+        tempItem = secondCell.item;
+        secondCell.Set_Item(cell.item);
+        cell.Set_Item(tempItem);
+    }
+
+    private void Drop_PickedCell()
+    {
+        if (pickedCell == null) return;
+
+        pickedCell.Drop();
+        pickedCell = null;
+    }
+
+    private void Get_StartPos()
+    {
+        if (pickedCell == null) return;
+
+        click_StartPos = pickedCell.itemImage_tr.position;
+    }
+
+    private void Get_CurrentPos()
+    {
+        click_CurrentPos = Get_InputWorldPos();
     }
 
     private Vector3 Get_InputWorldPos()
@@ -150,55 +190,4 @@ public class Game_Input : MonoBehaviour
 
         return dirrection;
     }
-
-    private void OnDisable()
-    {
-        GlobalEvents.Clear_Events();
-    }
-
-    //private void OnDisable()
-    //{
-    //    GlobalEvents.onClick_down -= Get_StartPos;
-    //    GlobalEvents.onClick_down -= Setup_PickedCell;
-    //    GlobalEvents.onClick_down -= Get_ClickedCell;
-
-    //    GlobalEvents.onDrag -= Move_PickedCell;
-    //    GlobalEvents.onDrag -= Get_CurrentPos;
-
-    //    GlobalEvents.onClick_up -= Reset_Input;
-    //}
-
-    //private void Input_PC()
-    //{
-    //    Ray ray = sceneCamera.ScreenPointToRay(Input.mousePosition);
-    //    RaycastHit clickHit;
-
-    //    if (Physics.Raycast(ray, out clickHit, 20.0f))
-    //    {
-    //        if (clickHit.collider.CompareTag("Cell"))
-    //        {
-    //            Debug.Log($"Cell clicked.");
-    //        }
-    //    }
-    //}
-
-    //private void Input_Mobile()
-    //{
-    //    foreach (Touch touch in Input.touches)
-    //    {
-    //        if (touch.phase == TouchPhase.Began)
-    //        {
-    //            Ray ray = sceneCamera.ScreenPointToRay(touch.position);
-    //            RaycastHit clickHit;
-
-    //            if (Physics.Raycast(ray, out clickHit, 20f))
-    //            {
-    //                if (clickHit.collider.CompareTag("Cell"))
-    //                {
-    //                    Debug.Log($"Cell clicked.");
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
 }

@@ -25,20 +25,17 @@ public class GameGrid
         Assign_CellItems();
 
         CenterGrid();
-
-        Check_Match();
-
-        GlobalEvents.onClick_up += SwapTiles;
     }
 
-    public GridCell Get_GridCell_byObj(GameObject obj)
+    #region Setup
+    private void Setup_GridHolder()
     {
-        foreach (GridCell cell in grid)
-            if (cell.go == obj)
-                return cell;
+        gridHolder = new GameObject("GridHolder").transform;
+    }
 
-        Debug.LogError($"Cell with {obj} not found.");
-        return null;
+    private void Setup_CellPrefab()
+    {
+        cellPrefab = Resources.Load("GameObjects/Cell", typeof(GameObject)) as GameObject;
     }
 
     private void Create_Grid()
@@ -108,7 +105,9 @@ public class GameGrid
 
         gridHolder.position = new Vector3(xValue, yValue, 0);
     }
+    #endregion
 
+    #region Helpers
     private GridCell Get_GridCell_byCoords(int x, int y)
     {
         foreach (GridCell cell in grid)
@@ -122,140 +121,19 @@ public class GameGrid
         return null;
     }
 
-    private void SwapTiles(GridCell cell, Utility.Dirrection dirrection)
+    public GridCell Get_GridCell_byObj(GameObject obj)
     {
-        if (cell == null) return;
-        if (cell.item == null) return;
-        if (dirrection == Utility.Dirrection.none) return;
-
-        GridCell secondCell = null;
-        Item tempItem = null;
-
-        switch (dirrection)
-        {
-            case Utility.Dirrection.left:
-                if (cell.n_left != null)
-                    secondCell = cell.n_left;
-                break;
-            case Utility.Dirrection.top:
-                if (cell.n_top != null)
-                    secondCell = cell.n_top;
-                break;
-            case Utility.Dirrection.right:
-                if (cell.n_right != null)
-                    secondCell = cell.n_right;
-                break;
-            case Utility.Dirrection.bottom:
-                if (cell.n_bottom != null)
-                    secondCell = cell.n_bottom;
-                break;
-        }
-
-        if (secondCell == null) return;
-
-        tempItem = secondCell.item;
-        secondCell.Set_Item(cell.item);
-        cell.Set_Item(tempItem);
-
-        Check_Match();
-    }
-
-    private bool Check_Match()
-    {
-        bool matchFound = false;
         foreach (GridCell cell in grid)
-        {
-            matchFound = HorizontalMatch(cell);
-            matchFound = VerticalMatch(cell);
-        }
+            if (cell.go == obj)
+                return cell;
 
-        return matchFound;
+        Debug.LogError($"Cell with {obj} not found.");
+        return null;
     }
 
-    private bool HorizontalMatch(GridCell cell)
+    public GridCell[] Get_Grid()
     {
-        if (cell.item == null) return false;
-
-        bool matchFound = false;
-
-        List<GridCell> tempList = new List<GridCell>();
-        tempList.Add(cell);
-
-        var cell_ItemType = cell.item.GetType();
-
-        if (IsValidCell(cell.n_left))
-            if (cell_ItemType == cell.n_left.item.GetType())
-            {
-                tempList.Add(cell.n_left);
-            }
-
-        if (IsValidCell(cell.n_right))
-            if (cell_ItemType == cell.n_right.item.GetType())
-            {
-                tempList.Add(cell.n_right);
-            }
-
-        if (tempList.Count >= 3)
-        {
-            matchFound = true;
-
-            foreach (GridCell matchingCells in tempList)
-                matchingCells.Remove_Item();
-        }
-
-        return matchFound;
-    }
-
-    private bool VerticalMatch(GridCell cell)
-    {
-        if (cell.item == null) return false;
-
-        bool matchFound = false;
-
-        List<GridCell> tempList = new List<GridCell>();
-        tempList.Add(cell);
-
-        var cell_ItemType = cell.item.GetType();
-
-        if (IsValidCell(cell.n_top))
-            if (cell_ItemType == cell.n_top.item.GetType())
-            {
-                tempList.Add(cell.n_top);
-            }
-
-        if (IsValidCell(cell.n_bottom))
-            if (cell_ItemType == cell.n_bottom.item.GetType())
-            {
-                tempList.Add(cell.n_bottom);
-            }
-
-        if (tempList.Count >= 3)
-        {
-            matchFound = true;
-
-            foreach (GridCell matchingCells in tempList)
-                matchingCells.Remove_Item();
-        }
-
-        return matchFound;
-    }
-
-    private bool IsValidCell(GridCell cell)
-    {
-        if (cell == null) return false;
-        if (cell.item == null) return false;
-        return true;
-    }
-
-    #region Setup
-    private void Setup_GridHolder()
-    {
-        gridHolder = new GameObject("GridHolder").transform;
-    }
-
-    private void Setup_CellPrefab()
-    {
-        cellPrefab = Resources.Load("GameObjects/Cell", typeof(GameObject)) as GameObject;
+        return grid;
     }
     #endregion
 }

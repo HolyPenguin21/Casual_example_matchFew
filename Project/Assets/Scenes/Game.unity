@@ -346,9 +346,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b14c09d3394ede64d907451b033da5f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  click_StartPos: {x: 0, y: 0, z: 0}
-  click_CurrentPos: {x: 0, y: 0, z: 0}
-  click_EndPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1346477158
 GameObject:
   m_ObjectHideFlags: 0
