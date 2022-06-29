@@ -9,8 +9,6 @@ public class GameGrid
     int width;
     int heigth;
 
-    float cellDist = 1.5f;
-
     Transform gridHolder;
     GameObject cellPrefab;
 
@@ -27,6 +25,10 @@ public class GameGrid
         Assign_CellItems();
 
         CenterGrid();
+
+        Check_Match();
+
+        GlobalEvents.onClick_up += SwapTiles;
     }
 
     public GridCell Get_GridCell_byObj(GameObject obj)
@@ -49,8 +51,8 @@ public class GameGrid
         {
             for (int x = 0; x < width; x++)
             {
-                float xPos = x * cellDist;
-                float yPos = y * cellDist;
+                float xPos = x * Utility.cellDist;
+                float yPos = y * Utility.cellDist;
 
                 Vector3 pos = new Vector3(xPos, yPos, 0);
 
@@ -87,13 +89,13 @@ public class GameGrid
             switch (rand)
             {
                 case 0:
-                    currentCell.item = new Blue(currentCell);
+                    currentCell.Set_Item(new Blue());
                     break;
                 case 1:
-                    currentCell.item = new Red(currentCell);
+                    currentCell.Set_Item(new Red());
                     break;
                 case 2:
-                    currentCell.item = new Yellow(currentCell);
+                    currentCell.Set_Item(new Yellow());
                     break;
             }
         }
@@ -101,8 +103,8 @@ public class GameGrid
 
     private void CenterGrid()
     {
-        float xValue = (5 - width) * (cellDist / 2);
-        float yValue = (7 - heigth) * (cellDist / 2);
+        float xValue = (5 - width) * (Utility.cellDist / 2);
+        float yValue = (7 - heigth) * (Utility.cellDist / 2);
 
         gridHolder.position = new Vector3(xValue, yValue, 0);
     }
@@ -118,6 +120,131 @@ public class GameGrid
         }
 
         return null;
+    }
+
+    private void SwapTiles(GridCell cell, Utility.Dirrection dirrection)
+    {
+        if (cell == null) return;
+        if (cell.item == null) return;
+        if (dirrection == Utility.Dirrection.none) return;
+
+        GridCell secondCell = null;
+        Item tempItem = null;
+
+        switch (dirrection)
+        {
+            case Utility.Dirrection.left:
+                if (cell.n_left != null)
+                    secondCell = cell.n_left;
+                break;
+            case Utility.Dirrection.top:
+                if (cell.n_top != null)
+                    secondCell = cell.n_top;
+                break;
+            case Utility.Dirrection.right:
+                if (cell.n_right != null)
+                    secondCell = cell.n_right;
+                break;
+            case Utility.Dirrection.bottom:
+                if (cell.n_bottom != null)
+                    secondCell = cell.n_bottom;
+                break;
+        }
+
+        if (secondCell == null) return;
+
+        tempItem = secondCell.item;
+        secondCell.Set_Item(cell.item);
+        cell.Set_Item(tempItem);
+
+        Check_Match();
+    }
+
+    private bool Check_Match()
+    {
+        bool matchFound = false;
+        foreach (GridCell cell in grid)
+        {
+            matchFound = HorizontalMatch(cell);
+            matchFound = VerticalMatch(cell);
+        }
+
+        return matchFound;
+    }
+
+    private bool HorizontalMatch(GridCell cell)
+    {
+        if (cell.item == null) return false;
+
+        bool matchFound = false;
+
+        List<GridCell> tempList = new List<GridCell>();
+        tempList.Add(cell);
+
+        var cell_ItemType = cell.item.GetType();
+
+        if (IsValidCell(cell.n_left))
+            if (cell_ItemType == cell.n_left.item.GetType())
+            {
+                tempList.Add(cell.n_left);
+            }
+
+        if (IsValidCell(cell.n_right))
+            if (cell_ItemType == cell.n_right.item.GetType())
+            {
+                tempList.Add(cell.n_right);
+            }
+
+        if (tempList.Count >= 3)
+        {
+            matchFound = true;
+
+            foreach (GridCell matchingCells in tempList)
+                matchingCells.Remove_Item();
+        }
+
+        return matchFound;
+    }
+
+    private bool VerticalMatch(GridCell cell)
+    {
+        if (cell.item == null) return false;
+
+        bool matchFound = false;
+
+        List<GridCell> tempList = new List<GridCell>();
+        tempList.Add(cell);
+
+        var cell_ItemType = cell.item.GetType();
+
+        if (IsValidCell(cell.n_top))
+            if (cell_ItemType == cell.n_top.item.GetType())
+            {
+                tempList.Add(cell.n_top);
+            }
+
+        if (IsValidCell(cell.n_bottom))
+            if (cell_ItemType == cell.n_bottom.item.GetType())
+            {
+                tempList.Add(cell.n_bottom);
+            }
+
+        if (tempList.Count >= 3)
+        {
+            matchFound = true;
+
+            foreach (GridCell matchingCells in tempList)
+                matchingCells.Remove_Item();
+        }
+
+        return matchFound;
+    }
+
+    private bool IsValidCell(GridCell cell)
+    {
+        if (cell == null) return false;
+        if (cell.item == null) return false;
+        return true;
     }
 
     #region Setup

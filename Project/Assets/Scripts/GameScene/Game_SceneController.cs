@@ -52,4 +52,9 @@ public class Game_SceneController : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    private void OnDisable()
+    {
+        GlobalEvents.Clear_Events();
+    }
 }

@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 
 public static class Utility
 {
+    public static float cellDist = 1.5f;
+
+    public enum Dirrection {none, left, top, right, bottom};
+
     public struct Coords
     {
         public int x { get; }

@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class Yellow : Item
 {
-    public Yellow(GridCell cell)
+    public Yellow()
     {
-        this.cell = cell;
         sprite = Game_SceneController.instance.yellowItemImage;
-
-        Set_ItemImage(Color.yellow);
+        color = Color.yellow;
     }
 
     public override void Destroy()

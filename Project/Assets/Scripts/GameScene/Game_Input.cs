@@ -40,7 +40,7 @@ public class Game_Input : MonoBehaviour
             GlobalEvents.Input_onDrag();
 
         if (Input.GetKeyUp(KeyCode.Mouse0))
-            GlobalEvents.Input_onClickUp();
+            GlobalEvents.Input_onClickUp(pickedCell, Get_DragDirrection());
     }
 
     private void Get_ClickedCell()
@@ -92,16 +92,14 @@ public class Game_Input : MonoBehaviour
         pickedCell.itemImage_tr.position = movePos;
     }
 
-    private void Reset_Input()
+    private void Reset_Input(GridCell cell, Utility.Dirrection dirrection)
     {
-        if (pickedCell == null) return;
+        if (cell == null) return;
 
-        pickedCell.Drop();
-        pickedCell = null;
+        cell.Drop();
 
-        click_StartPos = Vector3.zero;
-        click_CurrentPos = Vector3.zero;
-        click_EndPos = Vector3.zero;
+        if (pickedCell == cell)
+            pickedCell = null;
     }
 
     private Vector3 Get_InputWorldPos()
@@ -117,17 +115,58 @@ public class Game_Input : MonoBehaviour
         return Vector3.zero;
     }
 
+    private Utility.Dirrection Get_DragDirrection()
+    {
+        Utility.Dirrection dirrection = Utility.Dirrection.none;
+
+        float x_dif = Mathf.Abs(click_StartPos.x - click_CurrentPos.x);
+        float y_dif = Mathf.Abs(click_StartPos.y - click_CurrentPos.y);
+
+        float x_value = click_StartPos.x - click_CurrentPos.x;
+        float y_value = click_StartPos.y - click_CurrentPos.y;
+
+        if (x_dif > y_dif)
+        {
+            if (x_value < 0 && x_value < -Utility.cellDist / 2)
+            {
+                dirrection = Utility.Dirrection.right;
+            }
+            else if (x_value > 0 && x_value > Utility.cellDist / 2)
+            {
+                dirrection = Utility.Dirrection.left;
+            }
+        }
+        else
+        {
+            if (y_value < 0 && y_value < -Utility.cellDist / 2)
+            {
+                dirrection = Utility.Dirrection.top;
+            }
+            else if (y_value > 0 && y_value > Utility.cellDist / 2)
+            {
+                dirrection = Utility.Dirrection.bottom;
+            }
+        }
+
+        return dirrection;
+    }
+
     private void OnDisable()
     {
-        GlobalEvents.onClick_down -= Get_StartPos;
-        GlobalEvents.onClick_down -= Setup_PickedCell;
-        GlobalEvents.onClick_down -= Get_ClickedCell;
-
-        GlobalEvents.onDrag -= Move_PickedCell;
-        GlobalEvents.onDrag -= Get_CurrentPos;
-
-        GlobalEvents.onClick_up -= Reset_Input;
+        GlobalEvents.Clear_Events();
     }
+
+    //private void OnDisable()
+    //{
+    //    GlobalEvents.onClick_down -= Get_StartPos;
+    //    GlobalEvents.onClick_down -= Setup_PickedCell;
+    //    GlobalEvents.onClick_down -= Get_ClickedCell;
+
+    //    GlobalEvents.onDrag -= Move_PickedCell;
+    //    GlobalEvents.onDrag -= Get_CurrentPos;
+
+    //    GlobalEvents.onClick_up -= Reset_Input;
+    //}
 
     //private void Input_PC()
     //{

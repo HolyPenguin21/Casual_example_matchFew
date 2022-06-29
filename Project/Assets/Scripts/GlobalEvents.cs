@@ -20,11 +20,18 @@ public static class GlobalEvents
         onDrag?.Invoke();
     }
 
-    public delegate void OnClickUp();
+    public delegate void OnClickUp(GridCell cell, Utility.Dirrection dirrection);
     public static event OnClickUp onClick_up;
 
-    public static void Input_onClickUp()
+    public static void Input_onClickUp(GridCell cell, Utility.Dirrection dirrection)
     {
-        onClick_up?.Invoke();
+        onClick_up?.Invoke(cell, dirrection);
+    }
+
+    public static void Clear_Events()
+    {
+        onClick_down = null;
+        onDrag = null;
+        onClick_up = null;
     }
 }

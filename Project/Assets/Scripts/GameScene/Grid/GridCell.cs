@@ -6,10 +6,10 @@ public class GridCell
 
     public Utility.Coords coords;
 
-    public GridCell left;
-    public GridCell top;
-    public GridCell right;
-    public GridCell bottom;
+    public GridCell n_left;
+    public GridCell n_top;
+    public GridCell n_right;
+    public GridCell n_bottom;
 
     public Item item;
     public Transform itemImage_tr;
@@ -26,15 +26,34 @@ public class GridCell
 
     public void Set_Neighbors(GridCell left, GridCell top, GridCell right, GridCell bottom)
     {
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
+        this.n_left = left;
+        this.n_top = top;
+        this.n_right = right;
+        this.n_bottom = bottom;
     }
 
     public void Set_Item(Item item)
     {
+        if (item == null)
+        {
+            Remove_Item();
+            return;
+        }
+
         this.item = item;
+        itemImage_rend.sprite = this.item.sprite;
+
+        if (Game_SceneController.instance.changeColor)
+            itemImage_rend.color = this.item.color;
+
+        if(!itemImage_tr.gameObject.activeInHierarchy)
+            itemImage_tr.gameObject.SetActive(true);
+    }
+
+    public void Remove_Item()
+    {
+        item = null;
+        itemImage_tr.gameObject.SetActive(false);
     }
 
     public void PickUp()
