@@ -11,6 +11,8 @@ public class Game_Input : MonoBehaviour
 
     GridCell pickedCell;
 
+    bool cellsSwapped = false;
+
     void Awake()
     {
         sceneCamera = Camera.main;
@@ -29,6 +31,8 @@ public class Game_Input : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
+            cellsSwapped = false;
+
             GlobalEvents.Input_onClickDown();
         }
 
@@ -39,7 +43,8 @@ public class Game_Input : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Mouse0))
         {
-            SwapTiles(pickedCell, Get_DragDirrection());
+            SwapCells(pickedCell, Get_DragDirrection());
+            if(cellsSwapped)
             GlobalEvents.Input_onRelease();
         }
     }
@@ -90,7 +95,7 @@ public class Game_Input : MonoBehaviour
     #endregion
 
     #region On release
-    void SwapTiles(GridCell cell, Utility.Dirrection dirrection)
+    void SwapCells(GridCell cell, Utility.Dirrection dirrection)
     {
         if (cell == null) return;
         if (cell.item == null) return;
@@ -124,6 +129,8 @@ public class Game_Input : MonoBehaviour
         tempItem = secondCell.item;
         secondCell.Set_Item(cell.item);
         cell.Set_Item(tempItem);
+
+        cellsSwapped = true;
     }
 
     void Drop_PickedCell()
@@ -168,32 +175,33 @@ public class Game_Input : MonoBehaviour
 
     Utility.Dirrection Get_DragDirrection()
     {
+        Game_SceneController scene = Game_SceneController.instance;
         Utility.Dirrection dirrection = Utility.Dirrection.none;
-
-        float x_dif = Mathf.Abs(click_StartPos.x - click_CurrentPos.x);
-        float y_dif = Mathf.Abs(click_StartPos.y - click_CurrentPos.y);
 
         float x_value = click_StartPos.x - click_CurrentPos.x;
         float y_value = click_StartPos.y - click_CurrentPos.y;
 
+        float x_dif = Mathf.Abs(x_value);
+        float y_dif = Mathf.Abs(y_value);
+
         if (x_dif > y_dif)
         {
-            if (x_value < 0 && x_value < -Utility.cellDist / 2)
+            if (x_value < 0 && x_value < -scene.Get_CellDistance() / 2)
             {
                 dirrection = Utility.Dirrection.right;
             }
-            else if (x_value > 0 && x_value > Utility.cellDist / 2)
+            else if (x_value > 0 && x_value > scene.Get_CellDistance() / 2)
             {
                 dirrection = Utility.Dirrection.left;
             }
         }
         else
         {
-            if (y_value < 0 && y_value < -Utility.cellDist / 2)
+            if (y_value < 0 && y_value < -scene.Get_CellDistance() / 2)
             {
                 dirrection = Utility.Dirrection.top;
             }
-            else if (y_value > 0 && y_value > Utility.cellDist / 2)
+            else if (y_value > 0 && y_value > scene.Get_CellDistance() / 2)
             {
                 dirrection = Utility.Dirrection.bottom;
             }

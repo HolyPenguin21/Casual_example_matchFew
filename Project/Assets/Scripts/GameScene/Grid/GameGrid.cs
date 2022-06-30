@@ -7,15 +7,17 @@ public class GameGrid
     GridCell[] grid;
 
     readonly int width;
-    readonly int heigth;
+    readonly int height;
+    readonly float cellDist;
 
     Transform gridHolder;
     GameObject cellPrefab;
 
-    public GameGrid(int width, int height)
+    public GameGrid(int width, int height, float cellDist)
     {
         this.width = width;
-        this.heigth = height;
+        this.height = height;
+        this.cellDist = cellDist;
 
         Setup_GridHolder();
         Setup_CellPrefab();
@@ -40,19 +42,18 @@ public class GameGrid
 
     private void Create_Grid()
     {
-        int cellCount = width * heigth;
+        int cellCount = width * height;
         grid = new GridCell[cellCount];
 
         int current = 0;
-        for (int y = 0; y < heigth; y++)
+        for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                float xPos = x * Utility.cellDist;
-                float yPos = y * Utility.cellDist;
+                float xPos = x * cellDist;
+                float yPos = y * cellDist;
 
                 Vector3 pos = new Vector3(xPos, yPos, 0);
-
                 GameObject cell_obj = MonoBehaviour.Instantiate(cellPrefab, pos, Quaternion.identity, gridHolder);
                 cell_obj.name = $"{x}-{y}";
 
@@ -104,8 +105,8 @@ public class GameGrid
 
     private void CenterGrid()
     {
-        float xValue = (5 - width) * (Utility.cellDist / 2);
-        float yValue = (7 - heigth) * (Utility.cellDist / 2);
+        float xValue = (5 - width) * (cellDist / 2);
+        float yValue = (7 - height) * (cellDist / 2);
 
         gridHolder.position = new Vector3(xValue, yValue, 0);
     }
@@ -137,7 +138,6 @@ public class GameGrid
                 return currentCell;
         }
 
-        Debug.LogError($"Cell with {obj} not found.");
         return null;
     }
 

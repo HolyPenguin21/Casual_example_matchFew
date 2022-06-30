@@ -26,10 +26,10 @@ public class GridCell
 
     public void Set_Neighbors(GridCell left, GridCell top, GridCell right, GridCell bottom)
     {
-        this.n_left = left;
-        this.n_top = top;
-        this.n_right = right;
-        this.n_bottom = bottom;
+        n_left = left;
+        n_top = top;
+        n_right = right;
+        n_bottom = bottom;
     }
 
     public void Set_Item(Item item)

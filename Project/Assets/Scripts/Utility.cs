@@ -4,8 +4,6 @@ using UnityEngine.SceneManagement;
 
 public static class Utility
 {
-    public static float cellDist = 1.5f;
-
     public enum Dirrection {none, left, top, right, bottom};
 
     public struct Coords
@@ -20,6 +18,7 @@ public static class Utility
         }
     }
 
+    // Move into new SceneManager class
     public static void Load_Scene(int sceneId)
     {
         SceneManager.LoadScene(sceneId);
@@ -28,10 +27,5 @@ public static class Utility
     public static void QuitGame()
     {
         Application.Quit();
-    }
-
-    public static void Set_Framerate(int fps)
-    {
-        Application.targetFrameRate = fps;
     }
 }

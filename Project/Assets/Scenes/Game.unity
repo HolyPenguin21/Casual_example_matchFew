@@ -315,7 +315,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   width: 5
-  heigth: 7
+  height: 7
+  cellDist: 1.5
   changeColor: 1
   blueItemImage: {fileID: 0}
   redItemImage: {fileID: 0}

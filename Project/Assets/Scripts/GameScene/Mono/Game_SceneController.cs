@@ -9,7 +9,8 @@ public class Game_SceneController : MonoBehaviour
 
     [Header("Grid settings :")]
     [SerializeField] [Range(3, 5)] private int width = 5;
-    [SerializeField] [Range(3, 7)] private int heigth = 7;
+    [SerializeField] [Range(3, 7)] private int height = 7;
+    private float cellDist = 1.5f;
 
     [Header("Item settings :")]
     public bool changeColor = true;
@@ -26,7 +27,7 @@ public class Game_SceneController : MonoBehaviour
         Set_AsSingletone();
         Check_ItemImages();
 
-        grid = new GameGrid(width, heigth);
+        grid = new GameGrid(width, height, cellDist);
         burgerMenu = new BurgerMenu();
         matchChecker = new MatchChecker();
     }
@@ -41,6 +42,11 @@ public class Game_SceneController : MonoBehaviour
 
         if (yellowItemImage == null)
             yellowItemImage = Resources.Load<Sprite>("Items/unity_1");
+    }
+
+    public float Get_CellDistance()
+    {
+        return cellDist;
     }
 
     private void Set_AsSingletone()

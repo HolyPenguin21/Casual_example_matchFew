@@ -5,17 +5,28 @@ using UnityEngine.UI;
 
 public class Menu_SceneController : MonoBehaviour
 {
-    public Button startGame_button;
-    public Button quitGame_button;
+    public Button startGame_button, quitGame_button;
 
     private void Awake()
     {
         Setup_StartButton();
         Setup_QuitButton();
 
-        Utility.Set_Framerate(30);
+        GameSettings();
     }
 
+    void GameSettings()
+    {
+        Set_Framerate(30);
+    }
+
+    public static void Set_Framerate(int fps)
+    {
+        Application.targetFrameRate = fps;
+    }
+
+
+    // Move into new UI Class
     private void Setup_StartButton()
     {
         startGame_button = Utility_UI.Get_Scene_Button(startGame_button, "Start");
