@@ -12,17 +12,19 @@ public class Menu_SceneController : MonoBehaviour
     {
         Setup_StartButton();
         Setup_QuitButton();
+
+        Utility.Set_Framerate(30);
     }
 
     private void Setup_StartButton()
     {
-        startGame_button = Utility.Get_Scene_Button(startGame_button, "Start");
+        startGame_button = Utility_UI.Get_Scene_Button(startGame_button, "Start");
         startGame_button.onClick.AddListener(Button_StartGame);
     }
 
     private void Setup_QuitButton()
     {
-        quitGame_button = Utility.Get_Scene_Button(quitGame_button, "Quit");
+        quitGame_button = Utility_UI.Get_Scene_Button(quitGame_button, "Quit");
         quitGame_button.onClick.AddListener(Utility.QuitGame);
     }
 

@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class Game_Input : MonoBehaviour
 {
-    private Camera sceneCamera;
+    Camera sceneCamera;
 
-    private Vector3 click_StartPos;
-    private Vector3 click_CurrentPos;
+    Vector3 click_StartPos;
+    Vector3 click_CurrentPos;
 
-    private GridCell pickedCell;
+    GridCell pickedCell;
 
-    private void Awake()
+    void Awake()
     {
         sceneCamera = Camera.main;
 
-        GlobalEvents.onClick_down += Set_PickedCell;
+        GlobalEvents.onClick_down += Get_PickedCell;
         GlobalEvents.onClick_down += Setup_PickedCell;
         GlobalEvents.onClick_down += Get_StartPos;
 
@@ -25,12 +25,7 @@ public class Game_Input : MonoBehaviour
         GlobalEvents.onRelease += Drop_PickedCell;
     }
 
-    private void Update()
-    {
-        InputHandler();
-    }
-
-    private void InputHandler()
+    void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -49,28 +44,35 @@ public class Game_Input : MonoBehaviour
         }
     }
 
-    private void Set_PickedCell()
+    #region On click
+    void Get_PickedCell()
     {
-        Ray ray = sceneCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit clickHit;
-
-        if (Physics.Raycast(ray, out clickHit, 50.0f))
-        {
-            if (clickHit.collider.CompareTag("Cell"))
-            {
-                pickedCell = Game_SceneController.instance.grid.Get_GridCell_byObj(clickHit.collider.gameObject);
-            }
-        }
+        GameObject cell_obj = Get_ClickedObject();
+        pickedCell = Game_SceneController.instance.grid.Get_GridCell_byObj(cell_obj);
     }
 
-    private void Setup_PickedCell()
+    void Setup_PickedCell()
     {
         if (pickedCell == null) return;
 
         pickedCell.PickUp();
     }
 
-    private void Move_PickedCell()
+    void Get_StartPos()
+    {
+        if (pickedCell == null) return;
+
+        click_StartPos = pickedCell.itemImage_tr.position;
+    }
+    #endregion
+
+    #region On hold
+    void Get_CurrentPos()
+    {
+        click_CurrentPos = Get_InputWorldPos();
+    }
+
+    void Move_PickedCell()
     {
         if (pickedCell == null) return;
 
@@ -85,8 +87,10 @@ public class Game_Input : MonoBehaviour
 
         pickedCell.itemImage_tr.position = movePos;
     }
+    #endregion
 
-    private void SwapTiles(GridCell cell, Utility.Dirrection dirrection)
+    #region On release
+    void SwapTiles(GridCell cell, Utility.Dirrection dirrection)
     {
         if (cell == null) return;
         if (cell.item == null) return;
@@ -122,27 +126,17 @@ public class Game_Input : MonoBehaviour
         cell.Set_Item(tempItem);
     }
 
-    private void Drop_PickedCell()
+    void Drop_PickedCell()
     {
         if (pickedCell == null) return;
 
         pickedCell.Drop();
         pickedCell = null;
     }
+    #endregion
 
-    private void Get_StartPos()
-    {
-        if (pickedCell == null) return;
-
-        click_StartPos = pickedCell.itemImage_tr.position;
-    }
-
-    private void Get_CurrentPos()
-    {
-        click_CurrentPos = Get_InputWorldPos();
-    }
-
-    private Vector3 Get_InputWorldPos()
+    #region Helpers
+    Vector3 Get_InputWorldPos()
     {
         Ray ray = sceneCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit clickHit;
@@ -155,7 +149,24 @@ public class Game_Input : MonoBehaviour
         return Vector3.zero;
     }
 
-    private Utility.Dirrection Get_DragDirrection()
+    GameObject Get_ClickedObject()
+    {
+        if (sceneCamera == null)
+            sceneCamera = Camera.main;
+
+        Ray ray = sceneCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit clickHit;
+
+        if (Physics.Raycast(ray, out clickHit, 50.0f))
+        {
+            if (clickHit.collider.CompareTag("Cell"))
+                return clickHit.collider.gameObject;
+        }
+
+        return null;
+    }
+
+    Utility.Dirrection Get_DragDirrection()
     {
         Utility.Dirrection dirrection = Utility.Dirrection.none;
 
@@ -190,4 +201,5 @@ public class Game_Input : MonoBehaviour
 
         return dirrection;
     }
+    #endregion
 }

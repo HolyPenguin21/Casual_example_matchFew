@@ -67,8 +67,10 @@ public class GameGrid
 
     private void Assign_Neighbors()
     {
-        foreach (GridCell currentCell in grid)
+        for(int i = 0; i < grid.Length; i++)
         {
+            GridCell currentCell = grid[i];
+
             GridCell left = Get_GridCell_byCoords(currentCell.coords.x - 1, currentCell.coords.y);
             GridCell top = Get_GridCell_byCoords(currentCell.coords.x, currentCell.coords.y + 1);
             GridCell right = Get_GridCell_byCoords(currentCell.coords.x + 1, currentCell.coords.y);
@@ -80,9 +82,11 @@ public class GameGrid
 
     private void Assign_CellItems()
     {
-        foreach (GridCell currentCell in grid)
+        for (int i = 0; i < grid.Length; i++)
         {
+            GridCell currentCell = grid[i];
             int rand = Random.Range(0, 3);
+
             switch (rand)
             {
                 case 0:
@@ -110,11 +114,13 @@ public class GameGrid
     #region Helpers
     private GridCell Get_GridCell_byCoords(int x, int y)
     {
-        foreach (GridCell cell in grid)
+        for (int i = 0; i < grid.Length; i++)
         {
-            if (cell.coords.x == x && cell.coords.y == y)
+            GridCell currentCell = grid[i];
+
+            if (currentCell.coords.x == x && currentCell.coords.y == y)
             {
-                return cell;
+                return currentCell;
             }
         }
 
@@ -123,9 +129,13 @@ public class GameGrid
 
     public GridCell Get_GridCell_byObj(GameObject obj)
     {
-        foreach (GridCell cell in grid)
-            if (cell.go == obj)
-                return cell;
+        for (int i = 0; i < grid.Length; i++)
+        {
+            GridCell currentCell = grid[i];
+
+            if (currentCell.go == obj)
+                return currentCell;
+        }
 
         Debug.LogError($"Cell with {obj} not found.");
         return null;
