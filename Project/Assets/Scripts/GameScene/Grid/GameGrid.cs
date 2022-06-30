@@ -6,8 +6,8 @@ public class GameGrid
 {
     GridCell[] grid;
 
-    int width;
-    int heigth;
+    readonly int width;
+    readonly int heigth;
 
     Transform gridHolder;
     GameObject cellPrefab;
