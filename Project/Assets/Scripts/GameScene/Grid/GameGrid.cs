@@ -57,7 +57,7 @@ public class GameGrid
                 GameObject cell_obj = MonoBehaviour.Instantiate(cellPrefab, pos, Quaternion.identity, gridHolder);
                 cell_obj.name = $"{x}-{y}";
 
-                Utility.Coords coords = new Utility.Coords(x, y);
+                Coords coords = new Coords(x, y);
                 GridCell cell = new GridCell(cell_obj, coords);
 
                 grid[current] = cell;

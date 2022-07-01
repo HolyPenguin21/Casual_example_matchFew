@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Game_SceneController : MonoBehaviour
 {
@@ -19,7 +18,8 @@ public class Game_SceneController : MonoBehaviour
     public Sprite yellowItemImage;
 
     [HideInInspector] public GameGrid grid;
-    BurgerMenu burgerMenu;
+    SceneLoader sceneLoader;
+    Game_UIController uIController;
     MatchChecker matchChecker;
 
     private void Awake()
@@ -27,8 +27,9 @@ public class Game_SceneController : MonoBehaviour
         Set_AsSingletone();
         Check_ItemImages();
 
+        sceneLoader = new SceneLoader();
+        uIController = new Game_UIController(sceneLoader);
         grid = new GameGrid(width, height, cellDist);
-        burgerMenu = new BurgerMenu();
         matchChecker = new MatchChecker();
     }
 

@@ -4,7 +4,7 @@ public class GridCell
 {
     public GameObject go;
 
-    public Utility.Coords coords;
+    public Coords coords;
 
     public GridCell n_left;
     public GridCell n_top;
@@ -15,7 +15,7 @@ public class GridCell
     public Transform itemImage_tr;
     public SpriteRenderer itemImage_rend;
 
-    public GridCell(GameObject go, Utility.Coords coords)
+    public GridCell(GameObject go, Coords coords)
     {
         this.go = go;
         this.coords = coords;

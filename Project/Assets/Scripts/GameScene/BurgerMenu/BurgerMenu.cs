@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,14 +5,6 @@ public class BurgerMenu
 {
     GameObject buttonCanvas_obj, menuCanvas_obj;
     Button burgerButton, quitToMenu_button, quitGame_button;
-
-    public BurgerMenu()
-    {
-        Setup_BurgerButton_Object();
-        Setup_BurgerMenu();
-
-        Close_Menu();
-    }
 
     #region Menu actions
     void OpenCloseMenu()
@@ -34,52 +24,55 @@ public class BurgerMenu
         menuCanvas_obj.SetActive(true);
     }
 
-    void Close_Menu()
+    public void Close_Menu()
     {
         menuCanvas_obj.SetActive(false);
     }
     #endregion
 
     #region Setup
-    void Setup_BurgerButton_Object()
+
+    #region Burger button
+    public void Set_BurgerButtonObject(GameObject obj)
     {
-        buttonCanvas_obj = Utility_UI.Get_Scene_CanvasObject("BurgerButton");
+        buttonCanvas_obj = obj;
+
         if (buttonCanvas_obj == null)
         {
             buttonCanvas_obj = MonoBehaviour.Instantiate(Resources.Load("UI/BurgerMenu/BurgerButton_Canvas", typeof(GameObject))) as GameObject;
         }
-
-        Setup_BurgerButton();
     }
 
-    void Setup_BurgerButton()
+    public void Set_BurgerButton(Button button)
     {
-        burgerButton = Utility_UI.Get_Scene_Button(burgerButton, "Burger");
+        burgerButton = button;
         burgerButton.onClick.AddListener(OpenCloseMenu);
     }
+    #endregion
 
-    void Setup_BurgerMenu()
+    #region Burger menu
+    public void Set_BurgerMenuObject(GameObject obj)
     {
-        menuCanvas_obj = Utility_UI.Get_Scene_CanvasObject("BurgerMenu");
+        menuCanvas_obj = obj;
+
         if (menuCanvas_obj == null)
         {
             menuCanvas_obj = MonoBehaviour.Instantiate(Resources.Load("UI/BurgerMenu/BurgerMenu_Canvas", typeof(GameObject))) as GameObject;
         }
-
-        Setup_QuitToMenuButton();
-        Setup_QuitButton();
     }
 
-    void Setup_QuitToMenuButton()
+    public void Set_QuitToMenuButton(Button button, SceneLoader sceneLoader)
     {
-        quitToMenu_button = Utility_UI.Get_Scene_Button(quitToMenu_button, "QuitToMenu");
-        quitToMenu_button.onClick.AddListener(() => Utility.Load_Scene(0));
+        quitToMenu_button = button;
+        quitToMenu_button.onClick.AddListener(() => sceneLoader.Load_Scene(0));
     }
 
-    void Setup_QuitButton()
+    public void Set_QuitGameButton(Button button, SceneLoader sceneLoader)
     {
-        quitGame_button = Utility_UI.Get_Scene_Button(quitGame_button, "QuitGame");
-        quitGame_button.onClick.AddListener(Utility.QuitGame);
+        quitGame_button = button;
+        quitGame_button.onClick.AddListener(sceneLoader.QuitGame);
     }
+    #endregion
+
     #endregion
 }
