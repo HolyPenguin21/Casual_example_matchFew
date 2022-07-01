@@ -22,6 +22,12 @@ public class Game_SceneController : MonoBehaviour
     Game_UIController uIController;
     MatchChecker matchChecker;
 
+    public delegate void OnClickDown();
+    public event OnClickDown onClick_down;
+
+    public delegate void OnDrag();
+    public event OnDrag onDrag;
+
     private void Awake()
     {
         Set_AsSingletone();
@@ -32,6 +38,18 @@ public class Game_SceneController : MonoBehaviour
         grid = new GameGrid(width, height, cellDist);
         matchChecker = new MatchChecker();
     }
+
+    #region Events
+    public void Input_onClickDown()
+    {
+        onClick_down?.Invoke();
+    }
+
+    public void Input_onDrag()
+    {
+        onDrag?.Invoke();
+    }
+    #endregion
 
     private void Check_ItemImages()
     {
@@ -64,6 +82,9 @@ public class Game_SceneController : MonoBehaviour
 
     private void OnDisable()
     {
-        GlobalEvents.Clear_Events();
+        onClick_down = null;
+        onDrag = null;
+
+        StopAllCoroutines();
     }
 }

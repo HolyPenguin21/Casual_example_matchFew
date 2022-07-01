@@ -7,9 +7,13 @@ public abstract class UI_Controller
     {
         Canvas[] allCanvases = MonoBehaviour.FindObjectsOfType<Canvas>();
 
-        foreach (Canvas canvas in allCanvases)
+        for (int i = 0; i < allCanvases.Length; i++)
+        {
+            Canvas canvas = allCanvases[i];
+
             if (canvas.gameObject.name.Contains(name))
                 return canvas.gameObject;
+        }
 
         Debug.Log($"'{name}' Canvas object is not set as variable");
         return null;
@@ -21,9 +25,13 @@ public abstract class UI_Controller
 
         Button[] allButtons = MonoBehaviour.FindObjectsOfType<Button>();
 
-        foreach (Button button in allButtons)
+        for (int i = 0; i < allButtons.Length; i++)
+        {
+            Button button = allButtons[i];
+
             if (button.gameObject.name.Contains(name))
                 return button;
+        }
 
         Debug.Log($"'{name}' Button is not set as variable");
         return null;

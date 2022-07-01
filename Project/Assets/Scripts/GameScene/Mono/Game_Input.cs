@@ -8,76 +8,71 @@ public class Game_Input : MonoBehaviour
 
     Vector3 click_StartPos;
     Vector3 click_CurrentPos;
-
     GridCell pickedCell;
 
-    bool cellsSwapped = false;
+    Utility.Dirrection swapDirrection;
 
-    void Awake()
+    private void Awake()
     {
         sceneCamera = Camera.main;
 
-        GlobalEvents.onClick_down += Get_PickedCell;
-        GlobalEvents.onClick_down += Setup_PickedCell;
-        GlobalEvents.onClick_down += Get_StartPos;
+        Game_SceneController.instance.onClick_down += Get_PickedCell;
+        Game_SceneController.instance.onClick_down += Get_StartPos;
+        Game_SceneController.instance.onClick_down += Setup_PickedCell;
 
-        GlobalEvents.onDrag += Get_CurrentPos;
-        GlobalEvents.onDrag += Move_PickedCell;
+        Game_SceneController.instance.onDrag += Get_CurrentPos;
+        Game_SceneController.instance.onDrag += Move_PickedCell;
 
-        GlobalEvents.onRelease += Drop_PickedCell;
+        //Game_SceneController.instance.onRelease += Drop_PickedCell;
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            cellsSwapped = false;
-
-            GlobalEvents.Input_onClickDown();
+            Game_SceneController.instance.Input_onClickDown();
         }
 
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            GlobalEvents.Input_onDrag();
+            Game_SceneController.instance.Input_onDrag();
         }
 
         if (Input.GetKeyUp(KeyCode.Mouse0))
         {
-            SwapCells(pickedCell, Get_DragDirrection());
-            if(cellsSwapped)
-            GlobalEvents.Input_onRelease();
+            OnRelease();
         }
     }
 
     #region On click
-    void Get_PickedCell()
+    private void Get_PickedCell()
     {
         GameObject cell_obj = Get_ClickedObject();
         pickedCell = Game_SceneController.instance.grid.Get_GridCell_byObj(cell_obj);
     }
 
-    void Setup_PickedCell()
-    {
-        if (pickedCell == null) return;
-
-        pickedCell.PickUp();
-    }
-
-    void Get_StartPos()
+    private void Get_StartPos()
     {
         if (pickedCell == null) return;
 
         click_StartPos = pickedCell.itemImage_tr.position;
     }
+
+    private void Setup_PickedCell()
+    {
+        if (pickedCell == null) return;
+
+        pickedCell.PickUp();
+    }
     #endregion
 
     #region On hold
-    void Get_CurrentPos()
+    private void Get_CurrentPos()
     {
         click_CurrentPos = Get_InputWorldPos();
     }
 
-    void Move_PickedCell()
+    private void Move_PickedCell()
     {
         if (pickedCell == null) return;
 
@@ -95,55 +90,69 @@ public class Game_Input : MonoBehaviour
     #endregion
 
     #region On release
-    void SwapCells(GridCell cell, Utility.Dirrection dirrection)
+    // Test
+    private void OnRelease()
     {
-        if (cell == null) return;
-        if (cell.item == null) return;
-        if (dirrection == Utility.Dirrection.none) return;
+        if (pickedCell == null || pickedCell.item == null)
+            return;
 
+        swapDirrection = Get_SwapDirrection();
+        if (swapDirrection == Utility.Dirrection.none)
+        {
+            Drop_PickedCell();
+        }
+        else
+        {
+            SwapCells();
+            Drop_PickedCell();
+            //MatchChecker.Check_Match();
+            //StartCoroutine(DestroyAnimation);
+        }
+    }
+
+    private void SwapCells()
+    {
         GridCell secondCell = null;
-        Item tempItem = null;
-
-        switch (dirrection)
+        switch (swapDirrection)
         {
             case Utility.Dirrection.left:
-                if (cell.n_left != null)
-                    secondCell = cell.n_left;
+                if (pickedCell.n_left != null)
+                    secondCell = pickedCell.n_left;
                 break;
             case Utility.Dirrection.top:
-                if (cell.n_top != null)
-                    secondCell = cell.n_top;
+                if (pickedCell.n_top != null)
+                    secondCell = pickedCell.n_top;
                 break;
             case Utility.Dirrection.right:
-                if (cell.n_right != null)
-                    secondCell = cell.n_right;
+                if (pickedCell.n_right != null)
+                    secondCell = pickedCell.n_right;
                 break;
             case Utility.Dirrection.bottom:
-                if (cell.n_bottom != null)
-                    secondCell = cell.n_bottom;
+                if (pickedCell.n_bottom != null)
+                    secondCell = pickedCell.n_bottom;
                 break;
         }
 
-        if (secondCell == null) return;
+        if (secondCell == null)
+        {
+            Drop_PickedCell();
+            return;
+        }
 
-        tempItem = secondCell.item;
-        secondCell.Set_Item(cell.item);
-        cell.Set_Item(tempItem);
-
-        cellsSwapped = true;
+        Item tempItem = secondCell.item;
+        secondCell.Set_Item(pickedCell.item);
+        pickedCell.Set_Item(tempItem);
     }
 
-    void Drop_PickedCell()
+    private void Drop_PickedCell()
     {
-        if (pickedCell == null) return;
-
         pickedCell.Drop();
         pickedCell = null;
     }
     #endregion
 
     #region Helpers
-    Vector3 Get_InputWorldPos()
+    private Vector3 Get_InputWorldPos()
     {
         Ray ray = sceneCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit clickHit;
@@ -156,7 +165,7 @@ public class Game_Input : MonoBehaviour
         return Vector3.zero;
     }
 
-    GameObject Get_ClickedObject()
+    private GameObject Get_ClickedObject()
     {
         if (sceneCamera == null)
             sceneCamera = Camera.main;
@@ -173,7 +182,7 @@ public class Game_Input : MonoBehaviour
         return null;
     }
 
-    Utility.Dirrection Get_DragDirrection()
+    private Utility.Dirrection Get_SwapDirrection()
     {
         Game_SceneController scene = Game_SceneController.instance;
         Utility.Dirrection dirrection = Utility.Dirrection.none;

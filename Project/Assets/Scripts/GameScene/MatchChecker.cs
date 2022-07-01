@@ -6,72 +6,57 @@ public class MatchChecker
 {
     public MatchChecker()
     {
-        GlobalEvents.onRelease += Check_Match;
+
     }
 
-    private void Check_Match()
+    private IEnumerator Check_Match()
     {
-        foreach (GridCell cell in Game_SceneController.instance.grid.Get_Grid())
+        GridCell[] grid = Game_SceneController.instance.grid.Get_Grid();
+
+        for (int i = 0; i < grid.Length; i++)
         {
-            HorizontalMatch(cell);
-            VerticalMatch(cell);
+            GridCell cell = grid[i];
+
+            yield return HorizontalMatch(cell);
+            yield return VerticalMatch(cell);
         }
     }
 
-    private void HorizontalMatch(GridCell cell)
+    private IEnumerator HorizontalMatch(GridCell cell)
     {
-        if (cell.item == null) return;
+        List<GridCell> resultList = new List<GridCell>();
+        resultList.Add(cell);
 
-        List<GridCell> tempList = new List<GridCell>();
-        tempList.Add(cell);
+        if (IsValidCell(cell.n_left) && IsItemTypesTheSame(cell.item, cell.n_left.item))
+            resultList.Add(cell.n_left);
 
-        var cell_ItemType = cell.item.GetType();
+        if (IsValidCell(cell.n_right) && IsItemTypesTheSame(cell.item, cell.n_right.item))
+            resultList.Add(cell.n_right);
 
-        if (IsValidCell(cell.n_left))
-            if (cell_ItemType == cell.n_left.item.GetType())
-            {
-                tempList.Add(cell.n_left);
-            }
-
-        if (IsValidCell(cell.n_right))
-            if (cell_ItemType == cell.n_right.item.GetType())
-            {
-                tempList.Add(cell.n_right);
-            }
-
-        if (tempList.Count >= 3)
-        {
-            foreach (GridCell matchingCells in tempList)
-                matchingCells.Remove_Item();
-        }
+        yield return CheckResult_MatchThree(resultList);
     }
 
-    private void VerticalMatch(GridCell cell)
+    private IEnumerator VerticalMatch(GridCell cell)
     {
-        if (cell.item == null) return;
+        List<GridCell> resultList = new List<GridCell>();
+        resultList.Add(cell);
 
-        List<GridCell> tempList = new List<GridCell>();
-        tempList.Add(cell);
+        if (IsValidCell(cell.n_top) && IsItemTypesTheSame(cell.item, cell.n_top.item))
+            resultList.Add(cell.n_top);
 
-        var cell_ItemType = cell.item.GetType();
+        if (IsValidCell(cell.n_bottom) && IsItemTypesTheSame(cell.item, cell.n_bottom.item))
+            resultList.Add(cell.n_bottom);
 
-        if (IsValidCell(cell.n_top))
-            if (cell_ItemType == cell.n_top.item.GetType())
-            {
-                tempList.Add(cell.n_top);
-            }
+        yield return CheckResult_MatchThree(resultList);
+    }
 
-        if (IsValidCell(cell.n_bottom))
-            if (cell_ItemType == cell.n_bottom.item.GetType())
-            {
-                tempList.Add(cell.n_bottom);
-            }
+    private IEnumerator CheckResult_MatchThree(List<GridCell> resultList)
+    {
+        if (resultList.Count < 3) yield return null;
 
-        if (tempList.Count >= 3)
-        {
-            foreach (GridCell matchingCells in tempList)
-                matchingCells.Remove_Item();
-        }
+        foreach (GridCell matchingCells in resultList)
+            matchingCells.Remove_Item();
+
     }
 
     private bool IsValidCell(GridCell cell)
@@ -79,5 +64,14 @@ public class MatchChecker
         if (cell == null) return false;
         if (cell.item == null) return false;
         return true;
+    }
+
+    private bool IsItemTypesTheSame(Item a, Item b)
+    {
+        System.Type a_type = a.GetType();
+        System.Type b_type = b.GetType();
+
+        if (a_type == b_type) return true;
+        else return false;
     }
 }
