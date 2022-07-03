@@ -6,7 +6,7 @@ public class MatchChecker
 {
     public MatchChecker()
     {
-
+        Game_SceneController.instance.onRemove += Check_Match;
     }
 
     private IEnumerator Check_Match()
@@ -24,6 +24,8 @@ public class MatchChecker
 
     private IEnumerator HorizontalMatch(GridCell cell)
     {
+        if (!IsValidCell(cell)) yield break;
+
         List<GridCell> resultList = new List<GridCell>();
         resultList.Add(cell);
 
@@ -38,6 +40,8 @@ public class MatchChecker
 
     private IEnumerator VerticalMatch(GridCell cell)
     {
+        if (!IsValidCell(cell)) yield break;
+
         List<GridCell> resultList = new List<GridCell>();
         resultList.Add(cell);
 
@@ -52,11 +56,15 @@ public class MatchChecker
 
     private IEnumerator CheckResult_MatchThree(List<GridCell> resultList)
     {
-        if (resultList.Count < 3) yield return null;
+        if (resultList.Count < 3)
+        {
+            yield break;
+        }
 
         foreach (GridCell matchingCells in resultList)
+        {
             matchingCells.Remove_Item();
-
+        }
     }
 
     private bool IsValidCell(GridCell cell)

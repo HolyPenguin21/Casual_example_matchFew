@@ -28,6 +28,18 @@ public class Game_SceneController : MonoBehaviour
     public delegate void OnDrag();
     public event OnDrag onDrag;
 
+    public delegate void OnRelease();
+    public event OnRelease onRelease;
+
+    public delegate void OnFalseSwap();
+    public event OnFalseSwap onFalseSwap;
+
+    public delegate void OnTrueSwap();
+    public event OnTrueSwap onTrueSwap;
+
+    public delegate IEnumerator OnRemove();
+    public event OnRemove onRemove;
+
     private void Awake()
     {
         Set_AsSingletone();
@@ -48,6 +60,26 @@ public class Game_SceneController : MonoBehaviour
     public void Input_onDrag()
     {
         onDrag?.Invoke();
+    }
+
+    public void Input_onRelease()
+    {
+        onRelease?.Invoke();
+    }
+
+    public void Input_onFalseSwap()
+    {
+        onFalseSwap?.Invoke();
+    }
+
+    public void Input_onTrueSwap()
+    {
+        onTrueSwap?.Invoke();
+    }
+
+    public void MatchChecker_onRemove()
+    {
+        StartCoroutine(onRemove?.Invoke());
     }
     #endregion
 
@@ -84,6 +116,10 @@ public class Game_SceneController : MonoBehaviour
     {
         onClick_down = null;
         onDrag = null;
+        onRelease = null;
+        onFalseSwap = null;
+        onTrueSwap = null;
+        onRemove = null;
 
         StopAllCoroutines();
     }
